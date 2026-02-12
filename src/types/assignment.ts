@@ -46,6 +46,8 @@ export interface BaseAssignment {
   start_time: string | null;
   end_time: string | null;
   total_duration_minutes: number | null;
+  // Assignment tracking field
+  assigned_at: string | null; // NEW: Track when assignment was assigned vs created
 }
 
 // Assignment with joined profile data
