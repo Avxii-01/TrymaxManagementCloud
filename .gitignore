@@ -46,8 +46,22 @@ supabase/.branches/
 # --------------------
 release/
 electron/dist/
+dist-electron/
 
 # --------------------
 # Local project exports / backups
 # --------------------
 TrymaxManagementCloud/
+
+# Debug files
+DEBUG_*.sql
+*_TEST.sql
+*_DEPLOYMENT.md
+
+# Large build files that should be in releases
+*.exe
+*.dmg
+*.pkg
+*.deb
+*.rpm
+*.snap
