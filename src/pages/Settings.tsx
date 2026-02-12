@@ -14,11 +14,14 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { useToast } from "@/hooks/use-toast";
 import { useSettings } from "@/contexts/SettingsContext";
 import { supabase } from "@/integrations/supabase/client";
-import { User, Bell, Shield, Palette, Clock, Settings2, LogOut, Eye, EyeOff, Key, Archive } from "lucide-react";
+import { User, Bell, Shield, Palette, Clock, Settings2, LogOut, Eye, EyeOff, Key, Archive, RefreshCw, Megaphone } from "lucide-react";
+import { UserAccessControl } from "@/components/admin/UserAccessControl";
+import { BroadcastManager } from "@/components/admin/BroadcastManager";
+import { useIsSuperDirector } from "@/hooks/useUserAccessControl";
 
 export default function Settings() {
   const { user, signOut } = useAuth();
-  const { isDirector } = useUserRole();
+  const { isDirector, refreshRole } = useUserRole();
   const { toast } = useToast();
   const { 
     settings, 
@@ -39,6 +42,26 @@ export default function Settings() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
+
+  const handleRefreshRole = async () => {
+    try {
+      await refreshRole();
+      toast({
+        title: "Role Refreshed",
+        description: "Your role has been updated from the database.",
+      });
+      // Force page reload to ensure all components update
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to refresh role. Please try logging out and back in.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const userName = user?.user_metadata?.name || "User";
   const initials = userName
@@ -142,7 +165,7 @@ export default function Settings() {
     <AppLayout title="Settings">
       <div className="space-y-6 animate-fade-in max-w-3xl">
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
             <TabsTrigger value="profile" className="gap-2">
               <User className="h-4 w-4 hidden sm:inline" />
               Profile
@@ -151,6 +174,18 @@ export default function Settings() {
               <Shield className="h-4 w-4 hidden sm:inline" />
               Security
             </TabsTrigger>
+            {isDirector && (
+              <TabsTrigger value="access-control" className="gap-2">
+                <Shield className="h-4 w-4 hidden sm:inline" />
+                Access Control
+              </TabsTrigger>
+            )}
+            {isDirector && (
+              <TabsTrigger value="broadcasts" className="gap-2">
+                <Megaphone className="h-4 w-4 hidden sm:inline" />
+                Broadcasts
+              </TabsTrigger>
+            )}
             <TabsTrigger value="notifications" className="gap-2">
               <Bell className="h-4 w-4 hidden sm:inline" />
               Notifications
@@ -206,12 +241,22 @@ export default function Settings() {
 
                 <div className="space-y-2">
                   <Label htmlFor="role">Role</Label>
-                  <Input 
-                    id="role" 
-                    value={isDirector ? "Director" : "Employee"} 
-                    disabled 
-                    className="capitalize"
-                  />
+                  <div className="flex gap-2">
+                    <Input 
+                      id="role" 
+                      value={isDirector ? "Director" : "Employee"} 
+                      disabled 
+                      className="capitalize"
+                    />
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      onClick={handleRefreshRole}
+                      title="Refresh role from database"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
 
                 <Separator />
@@ -338,6 +383,20 @@ export default function Settings() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Access Control Settings (Super Director Only) */}
+          {isDirector && (
+            <TabsContent value="access-control">
+              <UserAccessControl />
+            </TabsContent>
+          )}
+
+          {/* Broadcast Settings (Super Director Only) */}
+          {isDirector && (
+            <TabsContent value="broadcasts">
+              <BroadcastManager />
+            </TabsContent>
+          )}
 
           {/* Notification Settings */}
           <TabsContent value="notifications">

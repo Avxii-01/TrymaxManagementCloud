@@ -6,6 +6,11 @@ export const TASK_CATEGORIES = [
   { value: "delivery", label: "Delivery", color: "bg-amber-500" },
   { value: "operation", label: "Operation", color: "bg-purple-500" },
   { value: "proposal", label: "Proposal", color: "bg-pink-500" },
+  { value: "accounts_tax", label: "Accounts & Tax", color: "bg-indigo-500" },
+  { value: "drawing", label: "Drawing", color: "bg-cyan-500" },
+  { value: "purchase", label: "Purchase", color: "bg-orange-500" },
+  { value: "hr", label: "HR", color: "bg-rose-500" },
+  { value: "admin", label: "Admin", color: "bg-gray-600" },
 ] as const;
 
 export type TaskCategory = typeof TASK_CATEGORIES[number]["value"];
@@ -20,6 +25,5 @@ export function getCategoryConfig(category: string) {
 
 // Legacy category mapping for migration
 export const LEGACY_CATEGORY_MAPPING: Record<string, TaskCategory> = {
-  "admin": "general",
   "other": "general",
 };

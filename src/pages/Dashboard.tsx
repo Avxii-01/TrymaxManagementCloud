@@ -8,6 +8,9 @@ import { OverdueAssignments } from "@/components/dashboard/OverdueAssignments";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { CreateAssignmentModal } from "@/components/assignments/CreateAssignmentModal";
 import { AssignmentDetailModal } from "@/components/assignments/AssignmentDetailModal";
+import { BroadcastContainer } from "@/components/dashboard/BroadcastBanner";
+import { useBroadcasts } from "@/hooks/useBroadcasts";
+import { useBroadcastRealtime } from "@/hooks/useBroadcastRealtime";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAssignmentStats, useAssignments, useOverdueAssignments, type Assignment } from "@/hooks/useAssignments";
@@ -26,6 +29,10 @@ export default function Dashboard() {
   const { data: overdueAssignments } = useOverdueAssignmentsWithProfiles();
   const { data: projects } = useProjects();
   const { data: profiles } = useProfiles();
+  const { data: broadcasts } = useBroadcasts();
+  
+  // Enable realtime updates for broadcasts
+  useBroadcastRealtime();
 
   // Filter out archived assignments for dashboard metrics
   const { filterArchived } = useAutoArchive(allAssignments);
@@ -162,6 +169,9 @@ export default function Dashboard() {
             </>
           )}
         </div>
+
+        {/* Broadcast Announcements */}
+        <BroadcastContainer broadcasts={broadcasts || []} />
 
         {/* Main Content Grid */}
         <div className="grid gap-6 lg:grid-cols-3">

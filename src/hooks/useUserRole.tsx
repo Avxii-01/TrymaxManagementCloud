@@ -8,6 +8,33 @@ export function useUserRole() {
   const [role, setRole] = useState<UserRole | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const refreshRole = async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Error fetching user role:", error);
+      // Fall back to metadata role
+      const metaRole = user.user_metadata?.role as UserRole;
+      setRole(metaRole || "employee");
+    } else if (data) {
+      setRole(data.role as UserRole);
+      // Update user metadata to match database
+      await supabase.auth.updateUser({
+        data: { role: data.role }
+      });
+    } else {
+      // Fall back to metadata role if no DB role exists
+      const metaRole = user.user_metadata?.role as UserRole;
+      setRole(metaRole || "employee");
+    }
+  };
+
   useEffect(() => {
     async function fetchRole() {
       if (!user) {
@@ -40,5 +67,5 @@ export function useUserRole() {
     fetchRole();
   }, [user]);
 
-  return { role, isLoading, isDirector: role === "director" };
+  return { role, isLoading, isDirector: role === "director", refreshRole };
 }

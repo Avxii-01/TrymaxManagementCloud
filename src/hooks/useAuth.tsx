@@ -67,7 +67,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Extract role from user metadata
         if (session?.user) {
           const role = session.user.user_metadata?.role as UserRole;
           setUserRole(role || 'employee');
@@ -97,17 +96,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string, rememberMe = false) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    if (!error) {
-      setLastActivity(Date.now());
-      setRememberMe(rememberMe); // Store Remember Me preference
-      
-      // Store Remember Me preference in localStorage for persistence
-      localStorage.setItem('supabase.remember.me', rememberMe.toString());
+    
+    if (error) {
+      return { error };
     }
+    
+    // Check if user is blocked immediately after successful auth
+    if (data.user) {
+      try {
+        const { data: blockedCheck, error: blockedError } = await supabase.rpc('check_user_access' as any, {
+          p_user_id: data.user.id
+        });
+        
+        if (blockedError) {
+          // If check fails, sign out immediately
+          await supabase.auth.signOut();
+          return { error: new Error('Failed to verify user access') };
+        }
+        
+        // If user is blocked, sign out and return error
+        if (Array.isArray(blockedCheck) && blockedCheck.length > 0 && blockedCheck[0]?.should_block) {
+          await supabase.auth.signOut();
+          return { error: new Error('Your account has been blocked. Please contact administrator.') };
+        }
+      } catch (checkError) {
+        // If blocked check fails, sign out for safety
+        await supabase.auth.signOut();
+        return { error: new Error('Authentication verification failed') };
+      }
+    }
+    
+    setLastActivity(Date.now());
+    setRememberMe(rememberMe); // Store Remember Me preference
+    
+    // Store Remember Me preference in localStorage for persistence
+    localStorage.setItem('supabase.remember.me', rememberMe.toString());
     return { error };
   };
 
