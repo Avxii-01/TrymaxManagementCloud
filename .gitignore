@@ -47,6 +47,18 @@ supabase/.branches/
 release/
 electron/dist/
 dist-electron/
+win-unpacked/
+
+# --------------------
+# Large build files (NEVER COMMIT)
+# --------------------
+*.exe
+*.dmg
+*.pkg
+*.deb
+*.rpm
+*.snap
+*.asar
 
 # --------------------
 # Local project exports / backups
@@ -57,11 +69,3 @@ TrymaxManagementCloud/
 DEBUG_*.sql
 *_TEST.sql
 *_DEPLOYMENT.md
-
-# Large build files that should be in releases
-*.exe
-*.dmg
-*.pkg
-*.deb
-*.rpm
-*.snap
