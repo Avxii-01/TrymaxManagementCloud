@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useSettings } from "@/contexts/SettingsContext";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Bell, Shield, Palette, Clock, Settings2, LogOut, Eye, EyeOff, Key, Archive, RefreshCw, Megaphone } from "lucide-react";
-import { UserAccessControl } from "@/components/admin/UserAccessControl";
+import { UserAccessControl } from "@/components/admin/UserAccessControlFixed";
 import { BroadcastManager } from "@/components/admin/BroadcastManager";
 import { useIsSuperDirector } from "@/hooks/useUserAccessControl";
 
