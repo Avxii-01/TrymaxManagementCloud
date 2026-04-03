@@ -7,7 +7,7 @@ import { TodayAssignments } from "@/components/dashboard/TodayAssignments";
 import { OverdueAssignments } from "@/components/dashboard/OverdueAssignments";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { CreateAssignmentModal } from "@/components/assignments/CreateAssignmentModal";
-import { AssignmentDetailModal } from "@/components/assignments/AssignmentDetailModal";
+import { AssignmentDetailModal } from "@/components/assignments/AssignmentDetailModalEnhanced";
 import { BroadcastContainer } from "@/components/dashboard/BroadcastBanner";
 import { useBroadcasts } from "@/hooks/useBroadcasts";
 import { useBroadcastRealtime } from "@/hooks/useBroadcastRealtime";

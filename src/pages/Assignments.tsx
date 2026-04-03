@@ -6,9 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AssignmentCard } from "@/components/assignments/AssignmentCard";
+import { AssignmentCard } from "@/components/assignments/AssignmentCardEnhanced";
 import { CreateAssignmentModal } from "@/components/assignments/CreateAssignmentModal";
-import { AssignmentDetailModal } from "@/components/assignments/AssignmentDetailModal";
+import { AssignmentDetailModal } from "@/components/assignments/AssignmentDetailModalEnhanced";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { AssignmentDebugTest } from "@/components/debug/AssignmentDebugTest";
 import { StatusBadge, PriorityBadge } from "@/components/ui/status-badge";
@@ -124,6 +124,14 @@ export default function Assignments() {
   const handleAssignmentClick = useCallback((assignment: AssignmentWithRelations) => {
     setSelectedAssignment(assignment);
   }, []);
+
+  const handleEditAssignment = useCallback((assignment: AssignmentWithRelations) => {
+    setSelectedAssignment(assignment);
+  }, []);
+
+  const canEdit = (assignment: AssignmentWithRelations) => {
+    return isDirector || (user && (assignment.creator_id === user.id || assignment.assignee_id === user.id));
+  };
 
   const handleClearFilters = useCallback(() => {
     setFilters({});
@@ -344,7 +352,9 @@ export default function Assignments() {
                 <AssignmentCard
                   assignment={assignment}
                   onClick={() => handleAssignmentClick(assignment)}
+                  onEdit={() => handleEditAssignment(assignment)}
                   showAssignee={isDirector}
+                  showEditButton={canEdit(assignment)}
                 />
                 {/* Archive/Unarchive button overlay */}
                 <Button

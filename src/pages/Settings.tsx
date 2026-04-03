@@ -18,6 +18,7 @@ import { User, Bell, Shield, Palette, Clock, Settings2, LogOut, Eye, EyeOff, Key
 import { UserAccessControl } from "@/components/admin/UserAccessControlFixed";
 import { BroadcastManager } from "@/components/admin/BroadcastManager";
 import { useIsSuperDirector } from "@/hooks/useUserAccessControl";
+import { cn } from "@/lib/utils";
 
 export default function Settings() {
   const { user, signOut } = useAuth();
@@ -154,6 +155,8 @@ export default function Settings() {
     await signOut();
   };
 
+  const [activeTab, setActiveTab] = useState('profile');
+
   const handleSaveNotificationPreferences = () => {
     toast({
       title: "Preferences saved",
@@ -164,46 +167,35 @@ export default function Settings() {
   return (
     <AppLayout title="Settings">
       <div className="space-y-6 animate-fade-in max-w-3xl">
-        <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="profile" className="gap-2">
-              <User className="h-4 w-4 hidden sm:inline" />
-              Profile
-            </TabsTrigger>
-            <TabsTrigger value="security" className="gap-2">
-              <Shield className="h-4 w-4 hidden sm:inline" />
-              Security
-            </TabsTrigger>
-            {isDirector && (
-              <TabsTrigger value="access-control" className="gap-2">
-                <Shield className="h-4 w-4 hidden sm:inline" />
-                Access Control
-              </TabsTrigger>
-            )}
-            {isDirector && (
-              <TabsTrigger value="broadcasts" className="gap-2">
-                <Megaphone className="h-4 w-4 hidden sm:inline" />
-                Broadcasts
-              </TabsTrigger>
-            )}
-            <TabsTrigger value="notifications" className="gap-2">
-              <Bell className="h-4 w-4 hidden sm:inline" />
-              Notifications
-            </TabsTrigger>
-            <TabsTrigger value="appearance" className="gap-2">
-              <Palette className="h-4 w-4 hidden sm:inline" />
-              Appearance
-            </TabsTrigger>
-            {isDirector && (
-              <TabsTrigger value="system" className="gap-2">
-                <Settings2 className="h-4 w-4 hidden sm:inline" />
-                System
-              </TabsTrigger>
-            )}
-          </TabsList>
+        <div className="flex items-center gap-2 border-b pb-2">
+          {[
+            { id: 'profile', label: 'Profile', icon: User },
+            { id: 'security', label: 'Security', icon: Shield },
+            ...(isDirector ? [{ id: 'access-control', label: 'Access Control', icon: Shield }] : []),
+            ...(isDirector ? [{ id: 'broadcasts', label: 'Broadcasts', icon: Megaphone }] : []),
+            { id: 'notifications', label: 'Notifications', icon: Bell },
+            { id: 'appearance', label: 'Appearance', icon: Palette },
+            ...(isDirector ? [{ id: 'system', label: 'System', icon: Settings2 }] : []),
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "flex items-center gap-2 px-3 py-2 text-sm rounded-md transition whitespace-nowrap",
+                activeTab === tab.id
+                  ? "bg-gray-200 text-black font-medium"
+                  : "text-gray-600 hover:bg-gray-100"
+              )}
+            >
+              <tab.icon className="h-4 w-4 hidden sm:inline" />
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
+        <div className="space-y-6">
           {/* Profile Settings */}
-          <TabsContent value="profile">
+          {activeTab === 'profile' && (
             <Card className="border-0 shadow-soft">
               <CardHeader>
                 <CardTitle>Profile Settings</CardTitle>
@@ -272,10 +264,10 @@ export default function Settings() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          )}
 
           {/* Security Settings */}
-          <TabsContent value="security">
+          {activeTab === 'security' && (
             <Card className="border-0 shadow-soft">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -382,24 +374,20 @@ export default function Settings() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          )}
 
           {/* Access Control Settings (Super Director Only) */}
-          {isDirector && (
-            <TabsContent value="access-control">
-              <UserAccessControl />
-            </TabsContent>
+          {isDirector && activeTab === 'access-control' && (
+            <UserAccessControl />
           )}
 
           {/* Broadcast Settings (Super Director Only) */}
-          {isDirector && (
-            <TabsContent value="broadcasts">
-              <BroadcastManager />
-            </TabsContent>
+          {isDirector && activeTab === 'broadcasts' && (
+            <BroadcastManager />
           )}
 
           {/* Notification Settings */}
-          <TabsContent value="notifications">
+          {activeTab === 'notifications' && (
             <Card className="border-0 shadow-soft">
               <CardHeader>
                 <CardTitle>Notification Preferences</CardTitle>
@@ -510,10 +498,10 @@ export default function Settings() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          )}
 
           {/* Appearance Settings */}
-          <TabsContent value="appearance">
+          {activeTab === 'appearance' && (
             <Card className="border-0 shadow-soft">
               <CardHeader>
                 <CardTitle>Appearance</CardTitle>
@@ -560,12 +548,11 @@ export default function Settings() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          )}
 
           {/* System Settings (Director Only) */}
-          {isDirector && (
-            <TabsContent value="system">
-              <Card className="border-0 shadow-soft">
+          {isDirector && activeTab === 'system' && (
+            <Card className="border-0 shadow-soft">
                 <CardHeader>
                   <CardTitle>System Configuration</CardTitle>
                   <CardDescription>Manage system-wide settings (Director only)</CardDescription>
@@ -661,9 +648,8 @@ export default function Settings() {
                   </div>
                 </CardContent>
               </Card>
-            </TabsContent>
-          )}
-        </Tabs>
+            )}
+        </div>
       </div>
     </AppLayout>
   );

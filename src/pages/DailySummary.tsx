@@ -358,56 +358,13 @@ export default function DailySummary() {
               )}
             </CardContent>
           </Card>
-
-          {/* Tasks Created Today */}
-          <Card className="border-0 shadow-soft">
-            <CardHeader>
-              <CardTitle className="text-lg">Tasks Created Today</CardTitle>
-              <CardDescription>Tasks that were created on {format(selectedDate, "MMMM d, yyyy")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="flex justify-center py-4">
-                  <LoadingSpinner size="sm" />
-                </div>
-              ) : assignments?.filter(a => {
-                if (!a.created_at) return false;
-                const createdDate = new Date(a.created_at);
-                return createdDate >= dateStart && createdDate <= dateEnd;
-              }).length === 0 ? (
-                <div className="text-center py-4 text-muted-foreground">
-                  <p>No tasks were created today</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {assignments?.filter(a => {
-                    if (!a.created_at) return false;
-                    const createdDate = new Date(a.created_at);
-                    return createdDate >= dateStart && createdDate <= dateEnd;
-                  }).map((assignment) => (
-                    <div key={assignment.id} className="flex items-center justify-between p-3 rounded-lg border bg-card">
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{assignment.title}</p>
-                        {assignment.remark && (
-                          <p className="text-xs text-muted-foreground italic mt-1">{assignment.remark}</p>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">
-                          {assignment.assignee?.name || "Unassigned"}
-                        </span>
-                        <Badge variant="outline" className="text-xs">
-                          {assignment.status.replace("_", " ")}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </div>
-      </AppLayout>
+        
+        {/* Tasks Created Today section removed due to duplication with Tasks Assigned Today 
+            - Both sections were showing the same data (filtered by creation date)
+            - Kept Tasks Assigned Today for better UX and reduced clutter
+            - Can be re-enabled later if needed by adding the section back */}
+    </AppLayout>
     );
   }
 
@@ -535,54 +492,6 @@ export default function DailySummary() {
                 {assignments?.filter(a => {
                   if (!a.created_date) return false;
                   const createdDate = new Date(a.created_date);
-                  return createdDate >= dateStart && createdDate <= dateEnd;
-                }).map((assignment) => (
-                  <div key={assignment.id} className="flex items-center justify-between p-3 rounded-lg border bg-card">
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">{assignment.title}</p>
-                      {assignment.remark && (
-                        <p className="text-xs text-muted-foreground italic mt-1">{assignment.remark}</p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">
-                        {assignment.assignee?.name || "Unassigned"}
-                      </span>
-                      <Badge variant="outline" className="text-xs">
-                        {assignment.status.replace("_", " ")}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Tasks Created Today */}
-        <Card className="border-0 shadow-soft">
-          <CardHeader>
-            <CardTitle className="text-lg">Tasks Created Today</CardTitle>
-            <CardDescription>Tasks that were created on {format(selectedDate, "MMMM d, yyyy")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="flex justify-center py-4">
-                <LoadingSpinner size="sm" />
-              </div>
-            ) : assignments?.filter(a => {
-              if (!a.created_at) return false;
-              const createdDate = new Date(a.created_at);
-              return createdDate >= dateStart && createdDate <= dateEnd;
-            }).length === 0 ? (
-              <div className="text-center py-4 text-muted-foreground">
-                <p>No tasks were created today</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {assignments?.filter(a => {
-                  if (!a.created_at) return false;
-                  const createdDate = new Date(a.created_at);
                   return createdDate >= dateStart && createdDate <= dateEnd;
                 }).map((assignment) => (
                   <div key={assignment.id} className="flex items-center justify-between p-3 rounded-lg border bg-card">
